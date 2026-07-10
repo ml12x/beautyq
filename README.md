@@ -1,0 +1,2 @@
+# beautyq
+Controlo de Faturação
