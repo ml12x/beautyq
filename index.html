@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>As Minhas Marcações</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBE7E1; --bg2:#FDF1EC; --card:#FFFBF8;
+    --ink:#4A2B27; --ink-soft:#8E6E67;
+    --coral:#E2857A; --coral-deep:#C25C50;
+    --blush:#F6D3CE; --gold:#DFAE58; --gold-pale:#F0DBA8;
+    --line:rgba(74,43,39,.14); --error:#A83A3A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:linear-gradient(160deg,var(--bg) 0%,var(--bg2) 55%,var(--bg) 100%);
+    color:var(--ink); font-family:'Manrope',sans-serif;
+    -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:840px;margin:0 auto;padding:28px 20px 80px;}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .arch-badge{
+    width:46px;height:60px;flex-shrink:0;border-radius:50% 50% 8px 8px;
+    background:linear-gradient(160deg,var(--blush),var(--coral-deep));
+    position:relative;box-shadow:inset 0 -8px 14px rgba(74,43,39,.22);
+  }
+  .arch-badge::after{content:'';position:absolute;inset:8px 8px 12px 8px;border:1px solid rgba(255,255,255,.55);border-radius:50% 50% 6px 6px;}
+  .top h1{font-family:'Playfair Display',serif;font-weight:600;font-size:32px;margin:0;color:var(--coral-deep);letter-spacing:-0.01em;}
+  .top p{margin:2px 0 0;color:var(--ink-soft);font-size:14px;font-family:'Playfair Display',serif;font-style:italic;font-weight:500;}
+
+  .user-bar{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-soft);}
+  .user-bar button{background:none;border:1px solid var(--line);border-radius:8px;padding:7px 13px;font-weight:700;cursor:pointer;color:var(--coral-deep);font-size:12.5px;font-family:'Manrope',sans-serif;}
+  .user-bar button:hover{background:var(--card);}
+
+  .tabs{display:flex;gap:6px;margin-bottom:24px;border-bottom:1px solid var(--line);}
+  .tab{font-family:'Manrope',sans-serif;font-weight:700;font-size:14px;padding:10px 4px;margin-right:22px;background:none;border:none;cursor:pointer;color:var(--ink-soft);border-bottom:2px solid transparent;transform:translateY(1px);}
+  .tab.active{color:var(--coral-deep);border-bottom:2px solid var(--coral-deep);}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
+  .stat{background:var(--card);border-radius:50% 50% 14px 14px / 30% 30% 14px 14px;padding:28px 14px 18px;text-align:center;border:1px solid var(--line);}
+  .stat .label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);font-weight:700;}
+  .stat .value{font-family:'Playfair Display',serif;font-size:25px;font-weight:600;color:var(--coral-deep);margin-top:6px;}
+  @media (max-width:560px){ .stats{grid-template-columns:1fr 1fr 1fr;gap:8px;} .stat{padding:20px 6px 12px;} .stat .value{font-size:18px;} }
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:22px;}
+  .panel h2{font-family:'Playfair Display',serif;font-weight:600;font-size:19px;margin:0 0 16px;color:var(--coral-deep);}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field.full{grid-column:1/-1;}
+  label{font-size:12px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;}
+  input,select,textarea{font-family:'Manrope',sans-serif;font-size:14.5px;padding:10px 11px;border-radius:9px;border:1px solid var(--line);background:#FFFDFB;color:var(--ink);outline:none;width:100%;}
+  input:focus,select:focus,textarea:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(194,92,80,.14);}
+  .btn{font-family:'Manrope',sans-serif;font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:9px;border:none;background:var(--coral-deep);color:#fff;cursor:pointer;margin-top:4px;width:100%;}
+  .btn:hover{background:#a94840;}
+  .btn:disabled{opacity:.6;cursor:default;}
+  .btn:focus-visible, .tab:focus-visible, .chip:focus-visible, .chk:focus-within{outline:2px solid var(--coral-deep);outline-offset:2px;}
+  .extras-row{display:flex;flex-wrap:wrap;gap:10px 16px;padding:6px 2px 2px;}
+  .chk{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink);text-transform:none;letter-spacing:0;}
+  .chk input{width:15px;height:15px;padding:0;accent-color:var(--coral-deep);}
+
+  .strip{display:flex;align-items:flex-end;gap:10px;height:120px;padding-top:10px;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+  .bar{width:100%;max-width:34px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--blush),var(--coral-deep));min-height:4px;}
+  .bar-col .daylabel{font-size:11px;color:var(--ink-soft);font-weight:700;}
+  .bar-col .dayval{font-size:10.5px;color:var(--ink-soft);}
+
+  .entry-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .entry-row:last-child{border-bottom:none;}
+  .entry-date{font-size:12px;color:var(--ink-soft);width:74px;flex-shrink:0;font-weight:700;}
+  .entry-main{flex:1;min-width:0;}
+  .entry-client{font-weight:700;font-size:14.5px;}
+  .entry-notes{font-size:12.5px;color:var(--ink-soft);margin-top:1px;}
+  .entry-extras{font-size:11.5px;color:var(--gold);font-weight:700;margin-top:2px;}
+  .chip{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;color:#fff;margin-right:6px;white-space:nowrap;}
+  .entry-price{font-family:'Playfair Display',serif;font-weight:600;font-size:16px;color:var(--coral-deep);width:70px;text-align:right;flex-shrink:0;}
+  .del{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:16px;padding:4px 6px;flex-shrink:0;}
+  .del:hover{color:var(--coral-deep);}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end;}
+  .empty{color:var(--ink-soft);font-size:14px;text-align:center;padding:26px 10px;}
+  .period-total{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(120deg,var(--gold-pale),var(--blush));border-radius:10px;padding:12px 16px;margin-bottom:14px;}
+  .period-total .amount{font-family:'Playfair Display',serif;font-size:22px;color:var(--coral-deep);font-weight:600;}
+  .loading{text-align:center;color:var(--ink-soft);padding:40px 0;font-size:14px;}
+
+  /* auth screen */
+  .auth-wrap{max-width:380px;margin:60px auto 0;}
+  .auth-header{text-align:center;margin-bottom:22px;}
+  .auth-header .arch-badge{margin:0 auto 12px;}
+  .auth-panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 24px;}
+  .auth-toggle{display:flex;gap:8px;margin-bottom:18px;}
+  .auth-toggle button{flex:1;padding:9px;border-radius:9px;border:1px solid var(--line);background:#FFFDFB;font-weight:700;font-size:13.5px;cursor:pointer;color:var(--ink-soft);font-family:'Manrope',sans-serif;}
+  .auth-toggle button.active{background:var(--coral-deep);color:#fff;border-color:var(--coral-deep);}
+  .auth-fields{display:flex;flex-direction:column;gap:12px;margin-bottom:8px;}
+  .auth-error{color:var(--error);font-size:13px;margin-top:10px;}
+  .auth-msg{color:var(--ink-soft);font-size:13px;margin-top:10px;}
+  .link-btn{background:none;border:none;color:var(--coral-deep);font-weight:700;font-size:12.5px;cursor:pointer;padding:0;text-decoration:underline;font-family:'Manrope',sans-serif;margin-top:12px;}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="root">
+  <div class="loading">A carregar...</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut, sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* =========================================================
+   1) CONFIGURAÇÃO DO FIREBASE
+   Substitui os valores abaixo pelos da tua consola Firebase
+   (Definições do projeto → As tuas apps → SDK setup).
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "COLOCA_AQUI_A_TUA_API_KEY",
+  authDomain: "COLOCA_AQUI.firebaseapp.com",
+  projectId: "COLOCA_AQUI_O_PROJECT_ID",
+  storageBucket: "COLOCA_AQUI.appspot.com",
+  messagingSenderId: "COLOCA_AQUI",
+  appId: "COLOCA_AQUI"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ========================================================= */
+
+const SERVICES = [
+  { id:'gel-maos',  label:'Verniz Gel',                          price:15, cat:'maos', group:'Mãos' },
+  { id:'ap-peq-1',  label:'Aplicação Pequena — 1ª vez',            price:30, cat:'maos', group:'Mãos' },
+  { id:'ap-peq-m',  label:'Aplicação Pequena — Manutenção',        price:26, cat:'maos', group:'Mãos' },
+  { id:'ap-med-1',  label:'Aplicação Média — 1ª vez',              price:35, cat:'maos', group:'Mãos' },
+  { id:'ap-med-m',  label:'Aplicação Média — Manutenção',          price:30, cat:'maos', group:'Mãos' },
+  { id:'ap-gde-1',  label:'Aplicação Grande — 1ª vez',             price:40, cat:'maos', group:'Mãos' },
+  { id:'ap-gde-m',  label:'Aplicação Grande — Manutenção',         price:35, cat:'maos', group:'Mãos' },
+  { id:'gel-pes',   label:'Verniz Gel',                          price:15, cat:'pes',  group:'Pés' },
+  { id:'pedicure',  label:'Pedicure',                            price:20, cat:'pes',  group:'Pés' },
+  { id:'pack1',     label:'Pack 1 — Verniz Gel Mãos + Pedicure',   price:27, cat:'pack', group:'Packs de Verão' },
+  { id:'pack2',     label:'Pack 2 — Extensão Gel Mãos + Pedicure', price:37, cat:'pack', group:'Packs de Verão' },
+  { id:'outro',     label:'Outro',                                price:0,  cat:'outro', group:'Outro' },
+];
+const EXTRAS = [
+  { id:'francesa', label:'Francesa',                    price:5 },
+  { id:'nailart',  label:'Nail Art (+2 unhas)',          price:3 },
+  { id:'remocao',  label:'Remoção de outra técnica',     price:5 },
+];
+const CAT_COLORS = { maos:'#E2857A', pes:'#C25C50', pack:'#DFAE58', outro:'#8E6E67' };
+function svcById(id){ return SERVICES.find(s=>s.id===id) || SERVICES[SERVICES.length-1]; }
+
+let currentUser = null;
+let entries = [];
+let unsubscribeEntries = null;
+let activeTab = 'painel';
+let histMonth = new Date().toISOString().slice(0,7);
+let histSearch = '';
+let authMode = 'login'; // 'login' | 'signup'
+
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function startOfWeekISO(d){ const date=new Date(d+'T00:00:00'); const day=(date.getDay()+6)%7; date.setDate(date.getDate()-day); return date.toISOString().slice(0,10); }
+function addDaysISO(iso,n){ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function monthBoundsISO(iso){ const [y,m]=iso.split('-').map(Number); return [ new Date(y,m-1,1).toISOString().slice(0,10), new Date(y,m,0).toISOString().slice(0,10) ]; }
+function eur(n){ return (Number(n)||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'}); }
+function fmtDatePT(iso){ return new Date(iso+'T00:00:00').toLocaleDateString('pt-PT',{day:'2-digit',month:'short'}); }
+function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+/* ---------------- AUTH SCREEN ---------------- */
+
+function renderAuth(errorMsg, infoMsg){
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    <div class="auth-wrap">
+      <div class="auth-header">
+        <div class="arch-badge"></div>
+        <h1 style="font-family:'Playfair Display',serif;font-weight:600;font-size:26px;color:var(--coral-deep);margin:0;">As Minhas Marcações</h1>
+        <p style="font-family:'Playfair Display',serif;font-style:italic;color:var(--ink-soft);margin:4px 0 0;font-size:13.5px;">Controlo de faturação — mãos &amp; pés</p>
+      </div>
+      <div class="auth-panel">
+        <div class="auth-toggle">
+          <button type="button" data-mode="login" class="${authMode==='login'?'active':''}">Iniciar sessão</button>
+          <button type="button" data-mode="signup" class="${authMode==='signup'?'active':''}">Criar conta</button>
+        </div>
+        <form id="auth-form">
+          <div class="auth-fields">
+            <div class="field">
+              <label for="a-email">Email</label>
+              <input type="email" id="a-email" required autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="a-pass">Palavra-passe</label>
+              <input type="password" id="a-pass" required minlength="6" autocomplete="${authMode==='signup'?'new-password':'current-password'}">
+            </div>
+          </div>
+          <button type="submit" class="btn" id="auth-submit">${authMode==='login'?'Iniciar sessão':'Criar conta'}</button>
+        </form>
+        ${authMode==='login' ? `<button type="button" class="link-btn" id="forgot-btn">Esqueci-me da palavra-passe</button>` : ''}
+        ${errorMsg ? `<div class="auth-error">${escapeHtml(errorMsg)}</div>` : ''}
+        ${infoMsg ? `<div class="auth-msg">${escapeHtml(infoMsg)}</div>` : ''}
+      </div>
+    </div>
+  `;
+
+  root.querySelectorAll('.auth-toggle button').forEach(b=>{
+    b.addEventListener('click', ()=>{ authMode = b.dataset.mode; renderAuth(); });
+  });
+
+  const form = document.getElementById('auth-form');
+  form.addEventListener('submit', async (ev)=>{
+    ev.preventDefault();
+    const email = document.getElementById('a-email').value.trim();
+    const pass = document.getElementById('a-pass').value;
+    const submitBtn = document.getElementById('auth-submit');
+    submitBtn.disabled = true;
+    try{
+      if(authMode==='signup'){
+        await createUserWithEmailAndPassword(auth, email, pass);
+      } else {
+        await signInWithEmailAndPassword(auth, email, pass);
+      }
+      // onAuthStateChanged trata da navegação seguinte
+    }catch(e){
+      renderAuth(traduzErroFirebase(e));
+    }
+  });
+
+  const forgotBtn = document.getElementById('forgot-btn');
+  if(forgotBtn){
+    forgotBtn.addEventListener('click', async ()=>{
+      const email = document.getElementById('a-email').value.trim();
+      if(!email){ renderAuth('Escreve o teu email no campo acima primeiro.'); return; }
+      try{
+        await sendPasswordResetEmail(auth, email);
+        renderAuth(null, 'Enviámos um email com instruções para repor a palavra-passe.');
+      }catch(e){
+        renderAuth(traduzErroFirebase(e));
+      }
+    });
+  }
+}
+
+function traduzErroFirebase(e){
+  const code = e && e.code ? e.code : '';
+  const map = {
+    'auth/email-already-in-use':'Já existe uma conta com este email.',
+    'auth/invalid-email':'Email inválido.',
+    'auth/weak-password':'A palavra-passe tem de ter pelo menos 6 caracteres.',
+    'auth/user-not-found':'Não existe conta com este email.',
+    'auth/wrong-password':'Palavra-passe incorreta.',
+    'auth/invalid-credential':'Email ou palavra-passe incorretos.',
+    'auth/too-many-requests':'Demasiadas tentativas. Tenta novamente mais tarde.',
+  };
+  return map[code] || ('Ocorreu um erro (' + (code || 'desconhecido') + '). Tenta novamente.');
+}
+
+/* ---------------- APP (depois de autenticado) ---------------- */
+
+let entriesLoadError = null;
+
+function startApp(){
+  const entriesRef = collection(db, 'entries');
+  const q = query(entriesRef, where('uid', '==', currentUser.uid));
+  unsubscribeEntries = onSnapshot(q, (snap)=>{
+    entriesLoadError = null;
+    entries = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    renderApp();
+  }, (err)=>{
+    console.error('Erro ao carregar marcações', err);
+    entriesLoadError = err.code === 'permission-denied'
+      ? 'Sem permissão para ler os dados. Confirma as regras do Firestore no teu projeto Firebase.'
+      : 'Não foi possível carregar as marcações (' + (err.code || err.message) + ').';
+    renderApp();
+  });
+}
+
+function computeTotals(){
+  const t = todayISO();
+  const wStart = startOfWeekISO(t), wEnd = addDaysISO(wStart,6);
+  const [mStart,mEnd] = monthBoundsISO(t.slice(0,7));
+  let today=0, week=0, month=0;
+  entries.forEach(e=>{
+    const p = Number(e.price)||0;
+    if(e.date===t) today+=p;
+    if(e.date>=wStart && e.date<=wEnd) week+=p;
+    if(e.date>=mStart && e.date<=mEnd) month+=p;
+  });
+  return {today,week,month};
+}
+function last7DaysData(){
+  const t=todayISO(); const days=[];
+  for(let i=6;i>=0;i--){
+    const iso=addDaysISO(t,-i);
+    const sum=entries.filter(e=>e.date===iso).reduce((a,e)=>a+(Number(e.price)||0),0);
+    days.push({iso,sum});
+  }
+  return days;
+}
+
+function renderApp(){
+  const root = document.getElementById('root');
+  const totals = computeTotals();
+  const days = last7DaysData();
+  const maxDay = Math.max(1, ...days.map(d=>d.sum));
+
+  root.innerHTML = `
+    <div class="top">
+      <div class="brand">
+        <div class="arch-badge"></div>
+        <div>
+          <h1>As Minhas Marcações</h1>
+          <p>Controlo de faturação — mãos &amp; pés</p>
+        </div>
+      </div>
+      <div class="user-bar">
+        <span>${escapeHtml(currentUser.email)}</span>
+        <button type="button" id="logout-btn">Sair</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab ${activeTab==='painel'?'active':''}" data-tab="painel">Painel</button>
+      <button class="tab ${activeTab==='historico'?'active':''}" data-tab="historico">Histórico</button>
+    </div>
+
+    ${entriesLoadError ? `<div class="panel" style="border-color:var(--error);"><div class="auth-error" style="margin-top:0;">⚠️ ${escapeHtml(entriesLoadError)}</div></div>` : ''}
+
+    ${activeTab==='painel' ? renderPainel(totals, days, maxDay) : renderHistorico()}
+  `;
+  attachAppEvents();
+  updateSuggestedPrice();
+}
+
+function optgroupsHtml(){
+  const groups = [];
+  SERVICES.forEach(s=>{
+    let g = groups.find(g=>g.name===s.group);
+    if(!g){ g={name:s.group, items:[]}; groups.push(g); }
+    g.items.push(s);
+  });
+  return groups.map(g=>`
+    <optgroup label="${g.name}">
+      ${g.items.map(s=>`<option value="${s.id}">${s.label}${s.price?` — ${s.price}€`:''}</option>`).join('')}
+    </optgroup>
+  `).join('');
+}
+
+function renderPainel(totals, days, maxDay){
+  return `
+    <div class="stats">
+      <div class="stat"><div class="label">Hoje</div><div class="value">${eur(totals.today)}</div></div>
+      <div class="stat"><div class="label">Esta semana</div><div class="value">${eur(totals.week)}</div></div>
+      <div class="stat"><div class="label">Este mês</div><div class="value">${eur(totals.month)}</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Registar marcação</h2>
+      <form id="entry-form">
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-date">Data</label>
+            <input type="date" id="f-date" value="${todayISO()}" required>
+          </div>
+          <div class="field">
+            <label for="f-service">Serviço</label>
+            <select id="f-service">${optgroupsHtml()}</select>
+          </div>
+          <div class="field">
+            <label for="f-client">Cliente</label>
+            <input type="text" id="f-client" placeholder="Nome (opcional)">
+          </div>
+          <div class="field">
+            <label for="f-price">Valor (€)</label>
+            <input type="number" id="f-price" min="0" step="0.5" placeholder="0,00" required>
+          </div>
+          <div class="field full">
+            <label>Extras</label>
+            <div class="extras-row">
+              ${EXTRAS.map(x=>`
+                <label class="chk"><input type="checkbox" class="extra-chk" value="${x.id}"> ${x.label} (+${x.price}€)</label>
+              `).join('')}
+            </div>
+          </div>
+          <div class="field full">
+            <label for="f-notes">Notas</label>
+            <input type="text" id="f-notes" placeholder="Opcional">
+          </div>
+        </div>
+        <button type="submit" class="btn" id="submit-entry">Registar</button>
+        <div class="auth-error" id="form-error"></div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Últimos 7 dias</h2>
+      <div class="strip">
+        ${days.map(d=>`
+          <div class="bar-col">
+            <div class="dayval">${d.sum>0?eur(d.sum).replace('€','').trim():''}</div>
+            <div class="bar" style="height:${Math.max(4,(d.sum/maxDay)*100)}%"></div>
+            <div class="daylabel">${fmtDatePT(d.iso)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Marcações recentes</h2>
+      ${renderEntryList([...entries].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt-a.createdAt)).slice(0,6))}
+    </div>
+  `;
+}
+
+function renderHistorico(){
+  const [mStart,mEnd] = monthBoundsISO(histMonth);
+  let filtered = entries.filter(e=>e.date>=mStart && e.date<=mEnd);
+  if(histSearch.trim()){
+    const q = histSearch.trim().toLowerCase();
+    filtered = filtered.filter(e=>(e.client||'').toLowerCase().includes(q));
+  }
+  filtered.sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt-a.createdAt));
+  const total = filtered.reduce((a,e)=>a+(Number(e.price)||0),0);
+  const monthLabel = new Date(histMonth+'-01T00:00:00').toLocaleDateString('pt-PT',{month:'long',year:'numeric'});
+
+  return `
+    <div class="panel">
+      <h2>Histórico</h2>
+      <div class="filters">
+        <div class="field"><label for="h-month">Mês</label><input type="month" id="h-month" value="${histMonth}"></div>
+        <div class="field"><label for="h-search">Pesquisar cliente</label><input type="text" id="h-search" value="${histSearch.replace(/"/g,'&quot;')}" placeholder="Nome do cliente"></div>
+      </div>
+      <div class="period-total">
+        <span style="text-transform:capitalize;font-weight:700;color:var(--ink-soft);font-size:13.5px;">${monthLabel}</span>
+        <span class="amount">${eur(total)}</span>
+      </div>
+      ${renderEntryList(filtered)}
+    </div>
+  `;
+}
+
+function renderEntryList(list){
+  if(list.length===0) return `<div class="empty">Ainda não há marcações registadas aqui.</div>`;
+  return list.map(e=>{
+    const svc = svcById(e.serviceId);
+    const color = CAT_COLORS[svc.cat] || CAT_COLORS.outro;
+    const extraLabels = (e.extraIds||[]).map(id=>{ const ex=EXTRAS.find(x=>x.id===id); return ex?ex.label:null; }).filter(Boolean);
+    return `
+      <div class="entry-row">
+        <div class="entry-date">${fmtDatePT(e.date)}</div>
+        <div class="entry-main">
+          <div class="entry-client"><span class="chip" style="background:${color}">${svc.label}</span>${e.client?escapeHtml(e.client):''}</div>
+          ${extraLabels.length?`<div class="entry-extras">+ ${extraLabels.join(', ')}</div>`:''}
+          ${e.notes?`<div class="entry-notes">${escapeHtml(e.notes)}</div>`:''}
+        </div>
+        <div class="entry-price">${eur(e.price)}</div>
+        <button class="del" data-id="${e.id}" title="Eliminar" aria-label="Eliminar marcação">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateSuggestedPrice(){
+  const svcSelect = document.getElementById('f-service');
+  const priceField = document.getElementById('f-price');
+  if(!svcSelect || !priceField) return;
+  const svc = svcById(svcSelect.value);
+  const extrasSum = Array.from(document.querySelectorAll('.extra-chk:checked')).reduce((a,el)=>{ const ex=EXTRAS.find(x=>x.id===el.value); return a+(ex?ex.price:0); },0);
+  priceField.value = (svc.price + extrasSum) || '';
+}
+
+function attachAppEvents(){
+  document.getElementById('logout-btn').addEventListener('click', async ()=>{
+    if(unsubscribeEntries) unsubscribeEntries();
+    await signOut(auth);
+  });
+
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ activeTab = btn.dataset.tab; renderApp(); });
+  });
+
+  const form = document.getElementById('entry-form');
+  if(form){
+    document.getElementById('f-service').addEventListener('change', updateSuggestedPrice);
+    document.querySelectorAll('.extra-chk').forEach(cb=>cb.addEventListener('change', updateSuggestedPrice));
+
+    form.addEventListener('submit', async (ev)=>{
+      ev.preventDefault();
+      const submitBtn = document.getElementById('submit-entry');
+      const date = document.getElementById('f-date').value || todayISO();
+      const serviceId = document.getElementById('f-service').value;
+      const client = document.getElementById('f-client').value.trim();
+      const price = parseFloat(document.getElementById('f-price').value);
+      const notes = document.getElementById('f-notes').value.trim();
+      const extraIds = Array.from(document.querySelectorAll('.extra-chk:checked')).map(el=>el.value);
+      if(isNaN(price) || price < 0) return;
+
+      const errBox = document.getElementById('form-error');
+      submitBtn.disabled = true;
+      if(errBox) errBox.textContent = '';
+      try{
+        await addDoc(collection(db,'entries'), {
+          uid: currentUser.uid, date, serviceId, extraIds, client, price, notes,
+          createdAt: Date.now()
+        });
+        form.reset();
+        document.getElementById('f-date').value = todayISO();
+        updateSuggestedPrice();
+      }catch(e){
+        console.error('Erro ao guardar', e);
+        if(errBox){
+          errBox.textContent = e.code === 'permission-denied'
+            ? 'Sem permissão para guardar. Confirma as regras do Firestore no teu projeto Firebase.'
+            : 'Não foi possível guardar (' + (e.code || e.message) + ').';
+        }
+      }
+      submitBtn.disabled = false;
+    });
+  }
+
+  const monthInput = document.getElementById('h-month');
+  if(monthInput) monthInput.addEventListener('change', ()=>{ histMonth = monthInput.value || histMonth; renderApp(); });
+
+  const searchInput = document.getElementById('h-search');
+  if(searchInput){
+    searchInput.addEventListener('input', ()=>{
+      histSearch = searchInput.value;
+      renderApp();
+      requestAnimationFrame(()=>{
+        const el = document.getElementById('h-search');
+        if(el){ el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
+      });
+    });
+  }
+
+  document.querySelectorAll('.del').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.id;
+      try{ await deleteDoc(doc(db,'entries', id)); }
+      catch(e){ console.error('Erro ao eliminar', e); }
+    });
+  });
+}
+
+/* ---------------- ARRANQUE ---------------- */
+
+onAuthStateChanged(auth, (user)=>{
+  if(user){
+    currentUser = user;
+    startApp();
+  } else {
+    currentUser = null;
+    entries = [];
+    if(unsubscribeEntries){ unsubscribeEntries(); unsubscribeEntries = null; }
+    renderAuth();
+  }
+});
+</script>
+</body>
+</html>
